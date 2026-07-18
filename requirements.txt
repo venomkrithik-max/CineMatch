@@ -1,9 +1,8 @@
 pandas
-numpy<2
+numpy
 matplotlib
 seaborn
 scikit-learn
-scikit-surprise
 streamlit
 requests
 scipy
