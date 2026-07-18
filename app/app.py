@@ -99,15 +99,15 @@ def recommend_svd(user_id, top_n=10, genre_filter=None, year_from=None, year_to=
     if year_to:
         candidates = candidates[candidates["Year"] <= year_to]
     unrated = [m for m in candidates["MovieID"].tolist() if m not in rated]
-    preds   = [svd_model.predict(user_id, mid) for mid in unrated]
-    preds.sort(key=lambda x: x.est, reverse=True)
+    preds   = [(mid, svd_model.predict(user_id, mid)) for mid in unrated]
+    preds.sort(key=lambda x: x[1], reverse=True)
     max_pop = max(popularity.values()) if popularity else 1
     results = []
-    for p in preds[:top_n]:
-        mid = p.iid; year = get_year(mid)
+    for mid, est_val in preds[:top_n]:
+        year = get_year(mid)
         results.append({
             "mid": mid, "title": get_title(mid), "genres": get_genres(mid),
-            "year": year, "est": round(p.est, 2),
+            "year": year, "est": round(est_val, 2),
             "is_popular": popularity.get(mid, 0)/max_pop > 0.3,
             "is_new": year is not None and year >= 2010,
         })
